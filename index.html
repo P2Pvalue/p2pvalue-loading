@@ -20,7 +20,7 @@
         border-left: 10px solid transparent;
         border-right: 10px solid transparent;
 
-        border-bottom: 14px solid black;
+        border-bottom: 10px solid black;
 
         -webkit-transition: top 5s linear, left 5s linear, -webkit-transform 5s linear;
         transition: top 5s linear, left 5s linear, -webkit-transform 5s linear, transform 5s linear;
@@ -45,6 +45,7 @@
 
           div.style.left = fromPosition()[0];
           div.style.top = fromPosition()[1];
+          rotate(div, 45);
 
 
           document.body.appendChild(div);
@@ -52,12 +53,15 @@
           div.style.left = toPosition()[0];
           div.style.top = toPosition()[1];
 
-          div.style.transform =
-            div.style.webkitTransform =
-            "rotate(360deg)";
-
+          rotate(div, 45);
 
         };
+
+        var rotate = function(el, deg) {
+          el.style.transform =
+            el.style.webkitTransform =
+            "rotate(" + deg + "deg)";
+        }
 
         var fromPosition =  function() {
           return getPosition("loading-from");
