@@ -1,0 +1,79 @@
+<html>
+  <head>
+    <style>
+      #p2pvalue-loading {
+        position: relative;
+      }
+
+      #loading-from {
+        float: left;
+      }
+
+      #loading-to {
+        float: right;
+      }
+
+      .loading-triangle {
+        position: absolute;
+        width: 0;
+        height: 0;
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+
+        border-bottom: 14px solid black;
+
+        -webkit-transition: top 5s linear, left 5s linear, -webkit-transform 5s linear;
+        transition: top 5s linear, left 5s linear, -webkit-transform 5s linear, transform 5s linear;
+      }
+    </style>
+    <script>
+      P2PvalueLoading = (function() {
+        var createTriangle = function() {
+          var div = document.createElement('div');
+          div.className = "loading-triangle";
+
+          div.style.left = fromPosition()[0];
+          div.style.top = fromPosition()[1];
+
+
+          document.body.appendChild(div);
+
+          div.style.left = toPosition()[0];
+          div.style.top = toPosition()[1];
+
+          div.style.transform =
+            div.style.webkitTransform =
+            "rotate(360deg)";
+
+
+        };
+
+        var fromPosition =  function() {
+          return getPosition("loading-from");
+        };
+
+        var toPosition =  function() {
+          return getPosition("loading-to");
+        };
+
+        var getPosition = function(id) {
+          el = document.getElementById(id);
+          rect = el.getBoundingClientRect();
+          
+          return [ rect.left + rect.width / 2, rect.top + rect.height / 2 ];
+        }
+       
+        return { 
+          createTriangle: createTriangle,
+          fromPosition: fromPosition
+        };
+      })()
+    </script>
+  </head>
+  <body>
+    <div id="p2pvalue-loading">
+      <img id="loading-from" src="pear.png">
+      <img id="loading-to" src="pear.png">
+    </div>
+  </body>
+</html>
