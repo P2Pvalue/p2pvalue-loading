@@ -28,9 +28,20 @@
     </style>
     <script>
       P2PvalueLoading = (function() {
+        var colors = [
+          "00B59D", "0A5843", "1363A7", "1ABEDC", "4F2641", "52C9E6", "68C5A6",
+          "A6C76C", "AB2035", "EC2F81", "EE2539", "F3735D", "F5979C", "FAB35D"           
+        ]
+
+        var randomColor = function() {
+          return "#" + colors[Math.floor(Math.random() * colors.length)];
+        }
+
         var createTriangle = function() {
           var div = document.createElement('div');
+
           div.className = "loading-triangle";
+          div.style.borderBottomColor = randomColor();
 
           div.style.left = fromPosition()[0];
           div.style.top = fromPosition()[1];
