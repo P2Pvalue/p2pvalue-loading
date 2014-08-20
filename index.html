@@ -1,26 +1,29 @@
 <html>
   <head>
     <style>
+      body {
+        margin: 0;
+      }
+
       #p2pvalue-loading {
         position: relative;
-        width: 250px;
+        width: 500px;
         height: 250px;
       }
 
-      #loading-from {
-        float: left;
-        display: none;
+      #loading-img-right {
+        margin-left: 90px;
       }
 
-      #loading-to {
-        float: right;
-        display: none;
+      .loading-mask {
+        display: inline;
       }
 
       .loading-triangle {
         position: absolute;
         width: 0;
         height: 0;
+        z-index: -1;
         border-left: 10px solid transparent;
         border-right: 10px solid transparent;
 
@@ -32,6 +35,13 @@
     </style>
     <script>
       P2PvalueLoading = (function() {
+        var intervalId;
+
+        var rightImgOffset = 250;
+
+        var xCells = 10;
+        var yCells = 14;
+
         var colors = [
           "00B59D", "0A5843", "1363A7", "1ABEDC", "4F2641", "52C9E6", "68C5A6",
           "A6C76C", "AB2035", "EC2F81", "EE2539", "F3735D", "F5979C", "FAB35D"           
@@ -59,10 +69,12 @@
           document.body.appendChild(div);
 
           setTimeout(function() {
+            div.style.zIndex = 10;
             div.style.left = destination[0];
             div.style.top = destination[1];
             rotate(div, 720 + destination[2]);
-          }, 10);
+            div.addEventListener("transitionend", triangleTransitioned, true);
+          }, 40);
 
         };
 
@@ -70,11 +82,15 @@
           el.style.transform =
             el.style.webkitTransform =
             "rotate(" + deg + "deg)";
-        }
+        };
+
+        var triangleTransitioned = function(e) {
+          e.target.style.zIndex = -1;
+        };
 
         var randomPosition = function(direction) {
-          // 150px if position is in the right
-          directionOffset = direction * 150;
+          // plus offset if position is in the right
+          directionOffset = direction * rightImgOffset;
 
           cell = randomCellPosition();
           
@@ -115,18 +131,10 @@
 
         var randomCellPosition = function() {
           return [
-            Math.floor(Math.random() * 10),
-            Math.floor(Math.random() * 10)
+            Math.floor(Math.random() * xCells),
+            Math.floor(Math.random() * yCells)
           ];
         }
-
-        var fromPosition =  function(left) {
-          // return getPosition("loading-from");
-        };
-
-        var toPosition =  function(left) {
-          // return getPosition("loading-to");
-        };
 
         var getPosition = function(id) {
           el = document.getElementById(id);
@@ -134,18 +142,30 @@
           
           return [ rect.left + rect.width / 2, rect.top + rect.height / 2 ];
         }
+
+        var start = function() {
+          intervalId = setInterval(function() { createTriangle() }, 100);
+        };
+
+        var pause = function() {
+          window.clearInterval(intervalId);
+        };
        
         return { 
           createTriangle: createTriangle,
-          fromPosition: fromPosition
+          start: start,
+          pause: pause
         };
       })()
     </script>
   </head>
   <body>
     <div id="p2pvalue-loading">
-      <img id="loading-from" src="pear.png">
-      <img id="loading-to" src="pear.png">
+      <img id="loading-img-left" src="pear.png" class="loading-mask">
+      <img id="loading-img-right" src="pear.png" class="loading-mask">
     </div>
+    <script>
+      P2PvalueLoading.start();
+    </script>
   </body>
 </html>
