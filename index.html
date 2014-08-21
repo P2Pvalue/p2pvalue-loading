@@ -17,6 +17,7 @@
 
       .loading-mask {
         display: inline;
+        z-index: 0;
       }
 
       .loading-triangle {
@@ -73,6 +74,7 @@
             div.style.left = destination[0];
             div.style.top = destination[1];
             rotate(div, 720 + destination[2]);
+            div.addEventListener("webkitTransitionEnd", triangleTransitioned, true);
             div.addEventListener("transitionend", triangleTransitioned, true);
           }, 40);
 
