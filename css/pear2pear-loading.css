@@ -1,0 +1,52 @@
+@font-face {
+  font-family: "Pear2Pear";
+  src: url('../fonts/pear2pear.woff?v=1.0.0');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.pear2pear-loading-container {
+  width: 100%;
+}
+
+.pear2pear-loading-pear {
+  display: inline-block;
+  font-family: "Pear2Pear";
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased; 
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1;
+}
+.pear2pear-loading-pear:before {
+  content: "\f001";
+}
+
+.pear2pear-loading-pear-left {
+}
+
+.pear2pear-loading-pear-right {
+}
+
+#loading-img-right {
+  margin-left: 90px;
+}
+
+.loading-mask {
+  display: inline;
+  z-index: 0;
+}
+
+.loading-triangle {
+  position: absolute;
+  width: 0;
+  height: 0;
+  z-index: -1;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+
+  border-bottom: 10px solid black;
+
+  -webkit-transition: top 5s linear, left 5s linear, -webkit-transform 5s linear;
+  transition: top 5s linear, left 5s linear, -webkit-transform 5s linear, transform 5s linear;
+}
+
