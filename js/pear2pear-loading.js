@@ -16,8 +16,8 @@ Pear2PearLoading = (function() {
     this.element.className = "loading-triangle";
     this.element.style.borderBottomColor = this.randomColor();
 
-    this.origin = this.randomPosition(this.direction);
-    this.destination = this.randomPosition(this.direction ^ 1);
+    this.origin = this.randomPosition();
+    this.destination = this.randomPosition();
   }
 
   Triangle.prototype = {
@@ -30,27 +30,38 @@ Pear2PearLoading = (function() {
     },
     randomCellPosition: function randomCellPosition() {
       return [
-        Math.floor(Math.random() * xCells),
-        Math.floor(Math.random() * yCells)
       ];
     },
     /* Set a random cell the triangle is going from or to
      *
-     * direction is 0 or 1, left or right pear
+     * Returns an array with:
+     *   order of cell in X
+     *   order of cell in Y
+     *   cellComplement: cells have two triangles: 0 or 1
+     *
      */
-    randomPosition: function randomPosition(direction) {
+    randomPosition: function randomPosition() {
+      return [
+        Math.floor(Math.random() * xCells),
+        Math.floor(Math.random() * yCells),
+        Math.floor(Math.random() * 2)
+      ];
+    },
+    /*
+     * The relative coordinates inside a Pear
+     *
+     * Given a position, it is translated to pixels
+     */
+    coordinates: function coordinates(position, direction) {
       // plus offset if position is in the right
-      directionOffset = direction * rightImgOffset;
-
-      cell = this.randomCellPosition();
-      
-      // There are two triangles by cell
-      cellComplement = Math.floor(Math.random() * 2);
+      var directionOffset = direction * rightImgOffset;
 
       // Adjacent cells are rotated 180
-      cellRotated = (cell[0] + cell[1]) % 2;
+      var cellRotated = (position[0] + position[1]) % 2;
 
-      finalRotation = (45 + cellComplement * 180 + cellRotated * 90) % 360;
+      var finalRotation = (45 + position[2] * 180 + cellRotated * 90) % 360;
+
+      var rotationOffset;
 
       switch(finalRotation) {
       case 45:
@@ -71,9 +82,9 @@ Pear2PearLoading = (function() {
        
       return [
         // 10px per cell + directionOffset
-        cell[0] * 14 + directionOffset + rotationOffset[0],
+        position[0] * 14 + directionOffset + rotationOffset[0],
         // 10px per cell
-        cell[1] * 14 + rotationOffset[1],
+        position[1] * 14 + rotationOffset[1],
         // offset + cell complement + rotated cell
         finalRotation
       ];
@@ -87,17 +98,21 @@ Pear2PearLoading = (function() {
       e.target.style.zIndex = -1;
     },
     draw: function draw() {
-      this.element.style.left = this.origin[0];
-      this.element.style.top = this.origin[1];
-      this.rotate(this.origin[2]);
+      var coord = this.coordinates(this.origin, this.direction);
+
+      this.element.style.left = coord[0];
+      this.element.style.top = coord[1];
+      this.rotate(coord[2]);
 
       document.body.appendChild(this.element);
     },
     animate: function animate() {
+      var coord = this.coordinates(this.destination, this.direction ^ 1);
+
       this.element.style.zIndex = 10;
-      this.element.style.left = this.destination[0];
-      this.element.style.top = this.destination[1];
-      this.rotate(720 + this.destination[2]);
+      this.element.style.left = coord[0];
+      this.element.style.top = coord[1];
+      this.rotate(720 + coord[2]);
       this.element.addEventListener("webkitTransitionEnd", this.transitioned, true);
       this.element.addEventListener("transitionend", this.transitioned, true);
     },
