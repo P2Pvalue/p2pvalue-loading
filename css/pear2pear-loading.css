@@ -27,10 +27,6 @@
 .pear2pear-loading-pear-right {
 }
 
-#loading-img-right {
-  margin-left: 90px;
-}
-
 .loading-mask {
   display: inline;
   z-index: 0;
@@ -41,10 +37,14 @@
   width: 0;
   height: 0;
   z-index: -1;
-  border-left: 10px solid transparent;
-  border-right: 10px solid transparent;
-
-  border-bottom: 10px solid black;
+  border-left-color: transparent;
+  border-left-style: solid;
+  border-left-width: 10px;
+  border-right-color: transparent;
+  border-right-style: solid;
+  border-right-width: 10px;
+  border-bottom-style: solid;
+  border-bottom-width: 10px;
 
   -webkit-transition: top 5s linear, left 5s linear, -webkit-transform 5s linear;
   transition: top 5s linear, left 5s linear, -webkit-transform 5s linear, transform 5s linear;

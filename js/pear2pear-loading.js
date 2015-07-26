@@ -1,10 +1,9 @@
 Pear2PearLoading = (function() {
   var container, leftPear, rightPear,
+      leftPearOffset, rightPearOffset,
       triangles = [];
 
   var intervalId;
-
-  var rightImgOffset = 250;
 
   var xCells = 6;
   var yCells = 8;
@@ -14,13 +13,28 @@ Pear2PearLoading = (function() {
 
     this.element = document.createElement('div');
     this.element.className = "loading-triangle";
+
     this.element.style.borderBottomColor = this.randomColor();
+    // The div becomes a right triangle whose hypotenuse is the border width
+    this.element.style.borderLeftWidth =
+      this.element.style.borderRightWidth =
+      this.element.style.borderBottomWidth =
+      this.hypotenuseSize;
 
     this.origin = this.randomPosition();
+    console.log(this.origin);
     this.destination = this.randomPosition();
+    console.log(this.destination);
   }
 
   Triangle.prototype = {
+    /*
+     * Dynamic, will be set in resize function
+     */
+    hypotenuseSize: 1,
+    sideSize: function sideSize() {
+      return this.hypotenuseSize / Math.sqrt(2);
+    },
     colors: [
       "00B59D", "0A5843", "1363A7", "1ABEDC", "4F2641", "52C9E6", "68C5A6",
       "A6C76C", "AB2035", "EC2F81", "EE2539", "F3735D", "F5979C", "FAB35D"           
@@ -28,9 +42,12 @@ Pear2PearLoading = (function() {
     randomColor: function randomColor() {
       return "#" + this.colors[Math.floor(Math.random() * this.colors.length)];
     },
-    randomCellPosition: function randomCellPosition() {
-      return [
-      ];
+    directionOffset: function directionOffset(direction) {
+      if (direction) {
+        return rightPearOffset;
+      } else {
+        return leftPearOffset;
+      }
     },
     /* Set a random cell the triangle is going from or to
      *
@@ -53,9 +70,6 @@ Pear2PearLoading = (function() {
      * Given a position, it is translated to pixels
      */
     coordinates: function coordinates(position, direction) {
-      // plus offset if position is in the right
-      var directionOffset = direction * rightImgOffset;
-
       // Adjacent cells are rotated 180
       var cellRotated = (position[0] + position[1]) % 2;
 
@@ -68,23 +82,24 @@ Pear2PearLoading = (function() {
         rotationOffset = [0, 0];
         break;
       case 135:
-        rotationOffset = [0, 7];
+        rotationOffset = [0, 1];
         break;
       case 225:
-        rotationOffset = [-7, 7];
+        rotationOffset = [-1, 1];
         break;
       case 315:
-        rotationOffset = [-7, 0];
+        rotationOffset = [-1, 0];
         break;
       default:
         console.log("Imposible final rotation: " + finalRotation);
       }
        
       return [
-        // 10px per cell + directionOffset
-        position[0] * 14 + directionOffset + rotationOffset[0],
-        // 10px per cell
-        position[1] * 14 + rotationOffset[1],
+        this.directionOffset(direction) +
+        position[0] * this.sideSize() +
+          rotationOffset[0] * this.hypotenuseSize / 2,
+        position[1] * this.sideSize() +
+          rotationOffset[1] * this.hypotenuseSize / 2,
         // offset + cell complement + rotated cell
         finalRotation
       ];
@@ -95,7 +110,7 @@ Pear2PearLoading = (function() {
         "rotate(" + deg + "deg)";
     },
     transitioned: function transitioned(e) {
-      e.target.style.zIndex = -1;
+     // e.target.style.zIndex = -1;
     },
     draw: function draw() {
       var coord = this.coordinates(this.origin, this.direction);
@@ -136,14 +151,6 @@ Pear2PearLoading = (function() {
     return t;
   };
 
-
-  var getPosition = function(id) {
-    el = document.getElementById(id);
-    rect = el.getBoundingClientRect();
-    
-    return [ rect.left + rect.width / 2, rect.top + rect.height / 2 ];
-  };
-
   function setSize() {
     var containerWidth = container.clientWidth;
     console.log(containerWidth);
@@ -157,7 +164,13 @@ Pear2PearLoading = (function() {
       rightPear.style.marginLeft =
       rightPear.style.marginRight =
       containerWidth * 0.15;
-    
+
+    Triangle.prototype.hypotenuseSize = containerWidth * 0.03125;
+
+    // Left margin
+    leftPearOffset = containerWidth * 0.15;
+    // leftPear margins plus rightPear margin plus leftPear
+    rightPearOffset = containerWidth * (0.15 * 3 + 0.25 * 0.75);
   }
 
   function create(el) {
