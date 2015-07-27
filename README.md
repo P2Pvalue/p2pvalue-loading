@@ -1,7 +1,7 @@
-P2Pvalue loading
+Pear2Pear loading
 ================
 
-Proof of concept of fancy P2Pvalue loading screen
+Fancy P2Pvalue loading screen
 
 All HTML, CSS and Javascript
 
