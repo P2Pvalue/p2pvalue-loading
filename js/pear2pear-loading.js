@@ -3,37 +3,26 @@ Pear2PearLoading = (function() {
       leftPearOffset, rightPearOffset,
       triangles = [];
 
+  var pos;
   var intervalId;
 
   var xCells = 6;
   var yCells = 8;
 
-  function Triangle(direction) {
-    this.direction = direction;
-
-    this.element = document.createElement('div');
-    this.element.className = "loading-triangle";
-
-    this.element.style.borderBottomColor = this.randomColor();
-    // The div becomes a right triangle whose hypotenuse is the border width
-    this.element.style.borderLeftWidth =
-      this.element.style.borderRightWidth =
-      this.element.style.borderBottomWidth =
-      this.hypotenuseSize;
-
-    this.origin = this.randomPosition();
-    console.log(this.origin);
-    this.destination = this.randomPosition();
-    console.log(this.destination);
+  function Triangle() {
+    this.build();
+    this.locate(this.destination);
   }
+
 
   Triangle.prototype = {
     /*
      * Dynamic, will be set in resize function
      */
-    hypotenuseSize: 1,
-    sideSize: function sideSize() {
-      return this.hypotenuseSize / Math.sqrt(2);
+    className: "pear2pear-loading-triangle pear2pear-loading-static-triangle",
+    sideSize: 1,
+    hypotenuseSize: function hypotenuseSize() {
+      return this.sideSize * Math.sqrt(2);
     },
     colors: [
       "00B59D", "0A5843", "1363A7", "1ABEDC", "4F2641", "52C9E6", "68C5A6",
@@ -42,14 +31,30 @@ Pear2PearLoading = (function() {
     randomColor: function randomColor() {
       return "#" + this.colors[Math.floor(Math.random() * this.colors.length)];
     },
-    directionOffset: function directionOffset(direction) {
-      if (direction) {
-        return rightPearOffset;
-      } else {
-        return leftPearOffset;
-      }
+    build: function build() {
+      this.element = document.createElement('div');
+      this.element.className = this.className;
+
+      this.element.style.borderBottomColor = this.randomColor();
+
+      // The div becomes a right triangle whose hypotenuse is the border width
+      this.element.style.borderLeftWidth =
+        this.element.style.borderRightWidth =
+        this.element.style.borderBottomWidth =
+        this.hypotenuseSize() / 2;
+
+      // FIXME
+      this.element.style.zIndex = 10;
+
+      // This triangle is in left or right Pear
+      this.pearSide = Math.floor(Math.random() * 2);
+      // FIXME
+      this.pearSide = 0;
+      // Position insde the Pear
+      this.destination = this.randomPosition();
     },
-    /* Set a random cell the triangle is going from or to
+    /*
+     * Set a random cell the triangle is going from or to
      *
      * Returns an array with:
      *   order of cell in X
@@ -58,49 +63,77 @@ Pear2PearLoading = (function() {
      *
      */
     randomPosition: function randomPosition() {
+      /*
       return [
         Math.floor(Math.random() * xCells),
         Math.floor(Math.random() * yCells),
         Math.floor(Math.random() * 2)
       ];
+      */
+      return pos;
     },
+    /*
+     * This triangle is located in left or right pear
+     */
+    pearSideOffset: function pearSideOffset(s) {
+        if (s) {
+          return rightPearOffset;
+        } else {
+          return leftPearOffset;
+        }
+      },
     /*
      * The relative coordinates inside a Pear
      *
      * Given a position, it is translated to pixels
      */
-    coordinates: function coordinates(position, direction) {
+    coordinates: function coordinates(position, pearSide) {
       // Adjacent cells are rotated 180
       var cellRotated = (position[0] + position[1]) % 2;
 
+      // offset + cell complement + rotated cell
       var finalRotation = (45 + position[2] * 180 + cellRotated * 90) % 360;
+
+      /* 
+       * There is a rotation offset when placing the triangle,
+       * the rotation center is at the center of the rectangle,
+       * so we have to move it a little bit
+       */
+
+      var peakDistance = this.hypotenuseSize() * (Math.sqrt(2) - 1) / 4;
+      var inDistance = this.hypotenuseSize() / 2 + peakDistance;
+
+      console.log(peakDistance);
 
       var rotationOffset;
 
       switch(finalRotation) {
       case 45:
-        rotationOffset = [0, 0];
+        rotationOffset = [
+          this.hypotenuseSize() * (Math.sqrt(2) - 1) / (2 * Math.sqrt(2)),
+          this.hypotenuseSize() * (Math.sqrt(2) - 1) / (4 * Math.sqrt(2))
+        ];
         break;
       case 135:
-        rotationOffset = [0, 1];
+        rotationOffset = [peakDistance, inDistance];
         break;
       case 225:
-        rotationOffset = [-1, 1];
+        rotationOffset = [-inDistance, inDistance];
         break;
       case 315:
-        rotationOffset = [-1, 0];
+        rotationOffset = [0, 0];
         break;
       default:
         console.log("Imposible final rotation: " + finalRotation);
       }
-       
+      console.log(this.sideSize);
+
       return [
-        this.directionOffset(direction) +
-        position[0] * this.sideSize() +
-          rotationOffset[0] * this.hypotenuseSize / 2,
-        position[1] * this.sideSize() +
-          rotationOffset[1] * this.hypotenuseSize / 2,
-        // offset + cell complement + rotated cell
+        this.pearSideOffset(pearSide) +
+        position[0] * this.sideSize +
+          rotationOffset[0],
+        position[1] * this.sideSize +
+          rotationOffset[1],
         finalRotation
       ];
     },
@@ -109,44 +142,69 @@ Pear2PearLoading = (function() {
         this.element.style.webkitTransform =
         "rotate(" + deg + "deg)";
     },
-    transitioned: function transitioned(e) {
-     // e.target.style.zIndex = -1;
-    },
-    draw: function draw() {
-      var coord = this.coordinates(this.origin, this.direction);
+    locate: function locate(position, pearSide) {
+      if (pearSide === undefined) {
+        pearSide = this.pearSide;
+      }
+
+      var coord = this.coordinates(this.destination, pearSide);
 
       this.element.style.left = coord[0];
       this.element.style.top = coord[1];
       this.rotate(coord[2]);
 
-      document.body.appendChild(this.element);
+      container.appendChild(this.element);
     },
-    animate: function animate() {
-      var coord = this.coordinates(this.destination, this.direction ^ 1);
-
-      this.element.style.zIndex = 10;
-      this.element.style.left = coord[0];
-      this.element.style.top = coord[1];
-      this.rotate(720 + coord[2]);
-      this.element.addEventListener("webkitTransitionEnd", this.transitioned, true);
-      this.element.addEventListener("transitionend", this.transitioned, true);
-    },
-    move: function move() {
-      this.draw();
-
-      var t = this;
-      setTimeout(function() {
-        t.animate();
-      }, 40);
-    }
   };
 
-  var createTriangle = function() {
-    var t = new Triangle(Math.floor(Math.random() * 2));
+  function MovingTriangle() {
+    this.origin = this.randomPosition();
+
+    this.build();
+    this.locate(this.origin, this.pearSide ^ 1);
+    this.move();
+  }
+
+  function MovingTriangleProto() {
+    this.className = "pear2pear-loading-triangle pear2pear-loading-moving-triangle";
+    this.transitioned = function transitioned(e) {
+       // e.target.style.zIndex = -1;
+      };
+    this.animate = function animate() {
+        var coord = this.coordinates(this.destination, this.pearSide);
+
+        this.element.style.zIndex = 10;
+        this.element.style.left = coord[0];
+        this.element.style.top = coord[1];
+        this.rotate(720 + coord[2]);
+        this.element.addEventListener("webkitTransitionEnd", this.transitioned, true);
+        this.element.addEventListener("transitionend", this.transitioned, true);
+      };
+    this.move = function move() {
+        var t = this;
+        setTimeout(function() {
+          t.animate();
+        }, 40);
+      };
+  }
+
+  MovingTriangleProto.prototype = Triangle.prototype;
+
+  MovingTriangle.prototype = new MovingTriangleProto();
+
+  var createTriangle = function(position) {
+    pos = position;
+    var t = new Triangle();
 
     triangles.push(t);
 
-    t.move();
+    return t;
+  };
+
+  var createMovingTriangle = function() {
+    var t = new MovingTriangle();
+
+    triangles.push(t);
 
     return t;
   };
@@ -165,7 +223,7 @@ Pear2PearLoading = (function() {
       rightPear.style.marginRight =
       containerWidth * 0.15;
 
-    Triangle.prototype.hypotenuseSize = containerWidth * 0.03125;
+    Triangle.prototype.sideSize = containerWidth * 0.03125;
 
     // Left margin
     leftPearOffset = containerWidth * 0.15;
@@ -188,10 +246,18 @@ Pear2PearLoading = (function() {
     setSize();
 
     window.onresize = setSize;
+
+    /*
+    for (var i = 0; i < xCells * yCells; i++) {
+      createTriangle();
+    }
+
+    start();
+    */
   }
 
   var start = function() {
-    intervalId = setInterval(function() { createTriangle(); }, 1000);
+    intervalId = setInterval(function() { createMovingTriangle(); }, 1000);
   };
 
   var pause = function() {
@@ -199,7 +265,10 @@ Pear2PearLoading = (function() {
   };
  
   return { 
+    m: MovingTriangle,
+    m2: MovingTriangleProto,
     createTriangle: createTriangle,
+    createMovingTriangle: createMovingTriangle,
     create: create,
     start: start,
     pause: pause
