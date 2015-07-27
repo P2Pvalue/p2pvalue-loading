@@ -1,6 +1,6 @@
 Pear2PearLoading = (function() {
   var container, leftPear, rightPear,
-      leftPearOffset, rightPearOffset,
+      topOffset, leftPearOffset, rightPearOffset,
       triangles = [];
 
   var intervalId;
@@ -132,6 +132,7 @@ Pear2PearLoading = (function() {
         position[0] * this.sideSize +
           rotationOffset[0],
         1 +
+        topOffset +
         position[1] * this.sideSize +
           rotationOffset[1],
         finalRotation
@@ -209,7 +210,12 @@ Pear2PearLoading = (function() {
   };
 
   function setSize() {
-    var containerWidth = container.clientWidth;
+    var containerWidth = container.clientWidth,
+        containerHeight = container.clientHeight;
+
+    container.style.paddingTop =
+      topOffset =
+      (containerHeight - containerWidth * 0.25) / 2;
 
     leftPear.style.fontSize =
       rightPear.style.fontSize =
