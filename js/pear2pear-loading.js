@@ -3,7 +3,6 @@ Pear2PearLoading = (function() {
       leftPearOffset, rightPearOffset,
       triangles = [];
 
-  var pos;
   var intervalId;
 
   var xCells = 6;
@@ -43,13 +42,9 @@ Pear2PearLoading = (function() {
         this.element.style.borderBottomWidth =
         this.hypotenuseSize() / 2;
 
-      // FIXME
-      this.element.style.zIndex = 10;
-
       // This triangle is in left or right Pear
       this.pearSide = Math.floor(Math.random() * 2);
-      // FIXME
-      this.pearSide = 0;
+
       // Position insde the Pear
       this.destination = this.randomPosition();
     },
@@ -63,14 +58,11 @@ Pear2PearLoading = (function() {
      *
      */
     randomPosition: function randomPosition() {
-      /*
       return [
         Math.floor(Math.random() * xCells),
         Math.floor(Math.random() * yCells),
         Math.floor(Math.random() * 2)
       ];
-      */
-      return pos;
     },
     /*
      * This triangle is located in left or right pear
@@ -103,30 +95,36 @@ Pear2PearLoading = (function() {
       var peakDistance = this.hypotenuseSize() * (Math.sqrt(2) - 1) / 4;
       var inDistance = this.hypotenuseSize() / 2 + peakDistance;
 
-      console.log(peakDistance);
-
       var rotationOffset;
 
       switch(finalRotation) {
       case 45:
         rotationOffset = [
-          this.hypotenuseSize() * (Math.sqrt(2) - 1) / (2 * Math.sqrt(2)),
-          this.hypotenuseSize() * (Math.sqrt(2) - 1) / (4 * Math.sqrt(2))
+          this.hypotenuseSize() * (3 * Math.sqrt(2) / 2 - 2) / 4,
+          this.hypotenuseSize() * (1 / Math.sqrt(2) - 1) / 4
         ];
         break;
       case 135:
-        rotationOffset = [peakDistance, inDistance];
+        rotationOffset = [
+          this.hypotenuseSize() * (3 * Math.sqrt(2) / 2 - 2) / 4,
+          this.hypotenuseSize() * (3 * Math.sqrt(2) / 2 - 1) / 4
+        ];
         break;
       case 225:
-        rotationOffset = [-inDistance, inDistance];
+        rotationOffset = [
+          this.hypotenuseSize() * (1 / Math.sqrt(2) - 2) / 4,
+          this.hypotenuseSize() * (3 * Math.sqrt(2) / 2 - 1) / 4
+        ];
         break;
       case 315:
-        rotationOffset = [0, 0];
+        rotationOffset = [
+          this.hypotenuseSize() * (1 / Math.sqrt(2) - 2) / 4,
+          this.hypotenuseSize() * (1 / Math.sqrt(2) - 1) / 4
+        ];
         break;
       default:
         console.log("Imposible final rotation: " + finalRotation);
       }
-      console.log(this.sideSize);
 
       return [
         this.pearSideOffset(pearSide) +
@@ -168,12 +166,11 @@ Pear2PearLoading = (function() {
   function MovingTriangleProto() {
     this.className = "pear2pear-loading-triangle pear2pear-loading-moving-triangle";
     this.transitioned = function transitioned(e) {
-       // e.target.style.zIndex = -1;
+        this.className = Triangle.prototype.className;
       };
     this.animate = function animate() {
         var coord = this.coordinates(this.destination, this.pearSide);
 
-        this.element.style.zIndex = 10;
         this.element.style.left = coord[0];
         this.element.style.top = coord[1];
         this.rotate(720 + coord[2]);
@@ -211,7 +208,6 @@ Pear2PearLoading = (function() {
 
   function setSize() {
     var containerWidth = container.clientWidth;
-    console.log(containerWidth);
 
     leftPear.style.fontSize =
       rightPear.style.fontSize =
@@ -247,13 +243,11 @@ Pear2PearLoading = (function() {
 
     window.onresize = setSize;
 
-    /*
     for (var i = 0; i < xCells * yCells; i++) {
       createTriangle();
     }
 
     start();
-    */
   }
 
   var start = function() {

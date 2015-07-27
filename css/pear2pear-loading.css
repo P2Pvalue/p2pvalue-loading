@@ -52,6 +52,8 @@
 }
 
 .pear2pear-loading-moving-triangle {
+  z-index: 10;
+
   -webkit-transition: top 5s linear, left 5s linear, -webkit-transform 5s linear;
   transition: top 5s linear, left 5s linear, -webkit-transform 5s linear, transform 5s linear;
 }
