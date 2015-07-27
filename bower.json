@@ -5,7 +5,10 @@
     "Antonio Tapiador del Dujo <atapiador@ucm.es>"
   ],
   "description": "Fancy Pear2Pear loading screen",
-  "main": "js/pear2pear-loading.js",
+  "main": [
+    "js/pear2pear-loading.js",
+    "css/pear2pear-loading.css"
+  ],
   "keywords": [
     "Pear",
     "Pear2Pear",
