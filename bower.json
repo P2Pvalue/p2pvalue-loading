@@ -1,0 +1,20 @@
+{
+  "name": "pear2pear-loading",
+  "version": "0.1.0",
+  "authors": [
+    "Antonio Tapiador del Dujo <atapiador@ucm.es>"
+  ],
+  "description": "Fancy Pear2Pear loading screen",
+  "main": "js/pear2pear-loading.js",
+  "keywords": [
+    "Pear",
+    "Pear2Pear",
+    "loading"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/P2Pvalue/pear2pear-loading",
+  "ignore": [
+    "**/.*",
+    "src"
+  ]
+}
