@@ -15,6 +15,13 @@
   "homepage": "https://github.com/P2Pvalue/pear2pear-loading",
   "ignore": [
     "**/.*",
-    "src"
+    "src",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "moduleType": [
+    "globals"
   ]
 }
