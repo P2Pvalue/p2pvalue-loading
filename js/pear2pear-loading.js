@@ -252,6 +252,9 @@ Pear2PearLoading = (function() {
   }
 
   function create(el) {
+    // Use 'pear2pear-loading' id by default
+    el = el || 'pear2pear-loading';
+
     container = document.getElementById(el);
     container.className = 'pear2pear-loading-container';
 
