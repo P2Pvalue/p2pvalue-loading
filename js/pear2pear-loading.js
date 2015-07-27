@@ -21,7 +21,7 @@ Pear2PearLoading = (function() {
     className: "pear2pear-loading-triangle pear2pear-loading-static-triangle",
     sideSize: 1,
     hypotenuseSize: function hypotenuseSize() {
-      return this.sideSize * Math.sqrt(2);
+      return this.sideSize * Math.sqrt(2) - 1;
     },
     colors: [
       "00B59D", "0A5843", "1363A7", "1ABEDC", "4F2641", "52C9E6", "68C5A6",
@@ -127,9 +127,11 @@ Pear2PearLoading = (function() {
       }
 
       return [
+        1 +
         this.pearSideOffset(pearSide) +
         position[0] * this.sideSize +
           rotationOffset[0],
+        1 +
         position[1] * this.sideSize +
           rotationOffset[1],
         finalRotation
@@ -219,7 +221,7 @@ Pear2PearLoading = (function() {
       rightPear.style.marginRight =
       containerWidth * 0.15;
 
-    Triangle.prototype.sideSize = containerWidth * 0.03125;
+    Triangle.prototype.sideSize = (containerWidth - 1) * 0.03125;
 
     // Left margin
     leftPearOffset = containerWidth * 0.15;
@@ -227,23 +229,43 @@ Pear2PearLoading = (function() {
     rightPearOffset = containerWidth * (0.15 * 3 + 0.25 * 0.75);
   }
 
+  function getBackgroundColor(el) {
+    var color = el.style.backgroundColor;
+    
+    if (color !== '') {
+      return color;
+    }
+
+    if (el.tagName === 'BODY') {
+        // return known 'false' value
+      return 'rgb(255, 255, 255)';
+    } else {
+        // call getBackground with parent item
+      return getBackgroundColor(el.parentElement);
+    }
+  }
+
   function create(el) {
-    container =  document.getElementById(el);
+    container = document.getElementById(el);
     container.className = 'pear2pear-loading-container';
-      
+
+    var color = getBackgroundColor(container);
+
     leftPear = document.createElement('div');
     leftPear.className = 'pear2pear-loading-pear pear2pear-loading-pear-left';
+    leftPear.style.color = color;
     container.appendChild(leftPear);
 
     rightPear = document.createElement('div');
     rightPear.className = 'pear2pear-loading-pear pear2pear-loading-pear-right';
+    rightPear.style.color = color;
     container.appendChild(rightPear);
 
     setSize();
 
     window.onresize = setSize;
 
-    for (var i = 0; i < xCells * yCells; i++) {
+    for (var i = 0; i < xCells * yCells * 2; i++) {
       createTriangle();
     }
 
@@ -259,8 +281,7 @@ Pear2PearLoading = (function() {
   };
  
   return { 
-    m: MovingTriangle,
-    m2: MovingTriangleProto,
+    getBackgroundColor: getBackgroundColor,
     createTriangle: createTriangle,
     createMovingTriangle: createMovingTriangle,
     create: create,
