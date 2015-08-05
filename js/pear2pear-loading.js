@@ -1,6 +1,7 @@
 Pear2PearLoading = (function() {
   var container, leftPear, rightPear,
-      topOffset, leftPearOffset, rightPearOffset,
+      leftPearOffset, rightPearOffset,
+      topOffset = 0,
       triangles = [];
 
   var intervalId;
@@ -40,7 +41,7 @@ Pear2PearLoading = (function() {
       this.element.style.borderLeftWidth =
         this.element.style.borderRightWidth =
         this.element.style.borderBottomWidth =
-        this.hypotenuseSize() / 2;
+        this.hypotenuseSize() / 2 + 'px';
 
       // This triangle is in left or right Pear
       this.pearSide = Math.floor(Math.random() * 2);
@@ -150,8 +151,8 @@ Pear2PearLoading = (function() {
 
       var coord = this.coordinates(this.destination, pearSide);
 
-      this.element.style.left = coord[0];
-      this.element.style.top = coord[1];
+      this.element.style.left = coord[0] + 'px';
+      this.element.style.top = coord[1] + 'px';
       this.rotate(coord[2]);
 
       container.appendChild(this.element);
@@ -174,8 +175,8 @@ Pear2PearLoading = (function() {
     this.animate = function animate() {
         var coord = this.coordinates(this.destination, this.pearSide);
 
-        this.element.style.left = coord[0];
-        this.element.style.top = coord[1];
+        this.element.style.left = coord[0] + 'px';
+        this.element.style.top = coord[1 + 'px'];
         this.rotate(720 + coord[2]);
         this.element.addEventListener("webkitTransitionEnd", this.transitioned, true);
         this.element.addEventListener("transitionend", this.transitioned, true);
@@ -211,21 +212,25 @@ Pear2PearLoading = (function() {
 
   function setSize() {
     var containerWidth = container.clientWidth,
-        containerHeight = container.clientHeight;
+        containerHeight = container.clientHeight,
+        paddingTop = (containerHeight - containerWidth * 0.25) / 2;
 
-    container.style.paddingTop =
-      topOffset =
-      (containerHeight - containerWidth * 0.25) / 2;
+    if (paddingTop < 0) {
+      paddingTop = 0;
+    }
+
+    topOffset = paddingTop;
+    container.style.paddingTop = paddingTop + 'px';
 
     leftPear.style.fontSize =
       rightPear.style.fontSize =
-      containerWidth * 0.25;
+      containerWidth * 0.25 + 'px';
 
     leftPear.style.marginLeft =
       leftPear.style.marginRight =
       rightPear.style.marginLeft =
       rightPear.style.marginRight =
-      containerWidth * 0.15;
+      containerWidth * 0.15 + 'px';
 
     Triangle.prototype.sideSize = (containerWidth - 1) * 0.03125;
 
@@ -281,16 +286,15 @@ Pear2PearLoading = (function() {
     start();
   }
 
-  var start = function() {
+  function start() {
     intervalId = setInterval(function() { createMovingTriangle(); }, 1000);
   };
 
-  var pause = function() {
+  function pause() {
     window.clearInterval(intervalId);
   };
  
   return { 
-    getBackgroundColor: getBackgroundColor,
     createTriangle: createTriangle,
     createMovingTriangle: createMovingTriangle,
     create: create,
