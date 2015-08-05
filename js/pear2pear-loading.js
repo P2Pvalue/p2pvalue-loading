@@ -2,7 +2,38 @@ Pear2PearLoading = (function() {
   var container, leftPear, rightPear,
       leftPearOffset, rightPearOffset,
       topOffset = 0,
-      triangles = [];
+      bannedCoordinates = [
+        [0, 0, 0],
+        [0, 0, 1],
+        [1, 0, 0],
+        [1, 0, 1],
+        [2, 0, 1], // 7
+        [3, 0, 0],
+        [3, 0, 1],
+        [4, 0, 0],
+        [4, 0, 1],
+        [5, 0, 0],
+        [5, 0, 1],
+        [0, 1, 0],
+        [0, 1, 1],
+        [5, 1, 0],
+        [5, 1, 1],
+        [0, 2, 0],
+        [0, 2, 1],
+        [5, 2, 0],
+        [5, 2, 1],
+        [0, 3, 1], // F
+        [5, 3, 0], // J
+        [0, 6, 1], // L
+        [5, 6, 0], // J
+        [0, 7, 0],
+        [0, 7, 1],
+        [1, 7, 1], // L
+        [4, 7, 0], // J
+        [5, 7, 0],
+        [5, 7, 1],
+      ],
+      triangles = [[], []];
 
   var intervalId;
 
@@ -26,7 +57,7 @@ Pear2PearLoading = (function() {
     },
     colors: [
       "00B59D", "0A5843", "1363A7", "1ABEDC", "4F2641", "52C9E6", "68C5A6",
-      "A6C76C", "AB2035", "EC2F81", "EE2539", "F3735D", "F5979C", "FAB35D"           
+      "A6C76C", "AB2035", "EC2F81", "EE2539", "F3735D", "F5979C", "FAB35D"
     ],
     randomColor: function randomColor() {
       return "#" + this.colors[Math.floor(Math.random() * this.colors.length)];
@@ -49,6 +80,17 @@ Pear2PearLoading = (function() {
       // Position insde the Pear
       this.destination = this.randomPosition();
     },
+    validRandomPosition: function validRandomPosition(pos) {
+      for (var i in bannedCoordinates) {
+        var ban = bannedCoordinates[i];
+
+        if (ban[0] === pos[0] && ban[1] === pos[1] && ban[2] === pos[2]) {
+          return false;
+        }
+      }
+
+      return true;
+    },
     /*
      * Set a random cell the triangle is going from or to
      *
@@ -57,13 +99,24 @@ Pear2PearLoading = (function() {
      *   order of cell in Y
      *   cellComplement: cells have two triangles: 0 or 1
      *
+     *   [0, 0, 0] is 7
+     *   [0, 0, 1] is L
+     *   [1, 0, 0] is J
+     *   [1, 0, 1] is F
+     *
      */
     randomPosition: function randomPosition() {
-      return [
+      var pos = [
         Math.floor(Math.random() * xCells),
         Math.floor(Math.random() * yCells),
         Math.floor(Math.random() * 2)
       ];
+
+      if (this.validRandomPosition(pos)) {
+        return pos;
+      } else {
+        return this.randomPosition();
+      }
     },
     /*
      * This triangle is located in left or right pear
@@ -87,7 +140,7 @@ Pear2PearLoading = (function() {
       // offset + cell complement + rotated cell
       var finalRotation = (45 + position[2] * 180 + cellRotated * 90) % 360;
 
-      /* 
+      /*
        * There is a rotation offset when placing the triangle,
        * the rotation center is at the center of the rectangle,
        * so we have to move it a little bit
@@ -242,7 +295,7 @@ Pear2PearLoading = (function() {
 
   function getBackgroundColor(el) {
     var color = el.style.backgroundColor;
-    
+
     if (color !== '') {
       return color;
     }
@@ -293,8 +346,8 @@ Pear2PearLoading = (function() {
   function pause() {
     window.clearInterval(intervalId);
   };
- 
-  return { 
+
+  return {
     createTriangle: createTriangle,
     createMovingTriangle: createMovingTriangle,
     create: create,
@@ -302,4 +355,3 @@ Pear2PearLoading = (function() {
     pause: pause
   };
 })();
-
