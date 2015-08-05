@@ -1,0 +1,5 @@
+{
+  "cmd": "python -m SimpleHTTPServer",
+  "name": "Simple HTTP server",
+  "sh": true
+}
