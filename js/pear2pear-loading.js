@@ -212,7 +212,7 @@ Pear2PearLoading = (function() {
         pearSide = this.pearSide;
       }
 
-      var coord = this.coordinates(this.destination, pearSide);
+      var coord = this.coordinates(position, pearSide);
 
       this.element.style.left = coord[0] + 'px';
       this.element.style.top = coord[1] + 'px';
@@ -223,9 +223,17 @@ Pear2PearLoading = (function() {
   };
 
   function MovingTriangle() {
-    this.origin = this.randomPosition();
-
     this.build();
+
+    if (triangles[this.pearSide ^ 1].length) {
+      var source =
+       triangles[this.pearSide ^ 1][Math.floor(Math.random() * triangles[this.pearSide ^ 1].length)];
+
+       this.origin = source.destination;
+    } else {
+      this.origin = this.randomPosition();
+    }
+
     this.locate(this.origin, this.pearSide ^ 1);
     this.move();
   }
@@ -234,12 +242,14 @@ Pear2PearLoading = (function() {
     this.className = "pear2pear-loading-triangle pear2pear-loading-moving-triangle";
     this.transitioned = function transitioned(e) {
         this.className = Triangle.prototype.className;
+
+        // triangles[this.pearSide].push(this);
       };
     this.animate = function animate() {
         var coord = this.coordinates(this.destination, this.pearSide);
 
         this.element.style.left = coord[0] + 'px';
-        this.element.style.top = coord[1 + 'px'];
+        this.element.style.top = coord[1] + 'px';
         this.rotate(720 + coord[2]);
         this.element.addEventListener("webkitTransitionEnd", this.transitioned, true);
         this.element.addEventListener("transitionend", this.transitioned, true);
@@ -259,15 +269,13 @@ Pear2PearLoading = (function() {
   var createTriangle = function(opts) {
     var t = new Triangle(opts);
 
-    triangles.push(t);
+    triangles[t.pearSide].push(t);
 
     return t;
   };
 
   var createMovingTriangle = function() {
     var t = new MovingTriangle();
-
-    triangles.push(t);
 
     return t;
   };
