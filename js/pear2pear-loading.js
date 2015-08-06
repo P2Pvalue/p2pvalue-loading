@@ -2,6 +2,9 @@ Pear2PearLoading = (function() {
   var container, leftPear, rightPear,
       leftPearOffset, rightPearOffset,
       topOffset = 0,
+      mandatoryCoordinates = [
+        [2, 0, 0] // L
+      ],
       bannedCoordinates = [
         [0, 0, 0],
         [0, 0, 1],
@@ -40,8 +43,8 @@ Pear2PearLoading = (function() {
   var xCells = 6;
   var yCells = 8;
 
-  function Triangle() {
-    this.build();
+  function Triangle(opts) {
+    this.build(opts);
     this.locate(this.destination);
   }
 
@@ -62,7 +65,9 @@ Pear2PearLoading = (function() {
     randomColor: function randomColor() {
       return "#" + this.colors[Math.floor(Math.random() * this.colors.length)];
     },
-    build: function build() {
+    build: function build(opts) {
+      opts = opts || {};
+
       this.element = document.createElement('div');
       this.element.className = this.className;
 
@@ -75,10 +80,15 @@ Pear2PearLoading = (function() {
         this.hypotenuseSize() / 2 + 'px';
 
       // This triangle is in left or right Pear
-      this.pearSide = Math.floor(Math.random() * 2);
+      this.pearSide =
+        opts.hasOwnProperty('pearSide') ?
+        opts.pearSide :
+        Math.floor(Math.random() * 2);
 
       // Position insde the Pear
-      this.destination = this.randomPosition();
+      this.destination =
+        opts.destination ||
+        this.randomPosition();
     },
     validRandomPosition: function validRandomPosition(pos) {
       for (var i in bannedCoordinates) {
@@ -246,9 +256,8 @@ Pear2PearLoading = (function() {
 
   MovingTriangle.prototype = new MovingTriangleProto();
 
-  var createTriangle = function(position) {
-    pos = position;
-    var t = new Triangle();
+  var createTriangle = function(opts) {
+    var t = new Triangle(opts);
 
     triangles.push(t);
 
@@ -262,6 +271,19 @@ Pear2PearLoading = (function() {
 
     return t;
   };
+
+  function createMandatoryTriangles() {
+    var pearSides = [0, 1];
+
+    for (var i in mandatoryCoordinates) {
+      for (var j in pearSides) {
+        createTriangle({
+          destination: mandatoryCoordinates[i],
+          pearSide: pearSides[j]
+        });
+      }
+    }
+  }
 
   function setSize() {
     var containerWidth = container.clientWidth,
@@ -331,6 +353,8 @@ Pear2PearLoading = (function() {
     setSize();
 
     window.onresize = setSize;
+
+    createMandatoryTriangles();
 
     for (var i = 0; i < xCells * yCells * 2; i++) {
       createTriangle();
