@@ -36,7 +36,8 @@ Pear2PearLoading = (function() {
         [5, 7, 0],
         [5, 7, 1],
       ],
-      triangles = [[], []];
+      triangles = [[], []]
+      movingTriangles = [];
 
   var intervalId;
 
@@ -240,19 +241,27 @@ Pear2PearLoading = (function() {
 
   function MovingTriangleProto() {
     this.className = "pear2pear-loading-triangle pear2pear-loading-moving-triangle";
+
     this.transitioned = function transitioned(e) {
+      triangles[this.pearSide].push(this);
+    };
+
+    this.movedTriangle = function movedTriangle() {
+      if (this.className === MovingTriangle.prototype.className) {
         this.className = Triangle.prototype.className;
 
-        // triangles[this.pearSide].push(this);
-      };
+        movingTriangles.shift().transitioned();
+      }
+    };
+
     this.animate = function animate() {
         var coord = this.coordinates(this.destination, this.pearSide);
 
         this.element.style.left = coord[0] + 'px';
         this.element.style.top = coord[1] + 'px';
         this.rotate(720 + coord[2]);
-        this.element.addEventListener("webkitTransitionEnd", this.transitioned, true);
-        this.element.addEventListener("transitionend", this.transitioned, true);
+        this.element.addEventListener("webkitTransitionEnd", this.movedTriangle, true);
+        this.element.addEventListener("transitionend", this.movedTriangle, true);
       };
     this.move = function move() {
         var t = this;
@@ -266,6 +275,7 @@ Pear2PearLoading = (function() {
 
   MovingTriangle.prototype = new MovingTriangleProto();
 
+
   var createTriangle = function(opts) {
     var t = new Triangle(opts);
 
@@ -276,6 +286,8 @@ Pear2PearLoading = (function() {
 
   var createMovingTriangle = function() {
     var t = new MovingTriangle();
+
+    movingTriangles.push(t);
 
     return t;
   };
