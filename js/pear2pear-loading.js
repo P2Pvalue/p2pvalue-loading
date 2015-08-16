@@ -47,6 +47,7 @@ Pear2PearLoading = (function() {
   function Triangle(opts) {
     this.build(opts);
     this.locate(this.destination);
+    this.draw();
   }
 
 
@@ -73,12 +74,6 @@ Pear2PearLoading = (function() {
       this.element.className = this.className;
 
       this.element.style.borderBottomColor = this.randomColor();
-
-      // The div becomes a right triangle whose hypotenuse is the border width
-      this.element.style.borderLeftWidth =
-        this.element.style.borderRightWidth =
-        this.element.style.borderBottomWidth =
-        this.hypotenuseSize() / 2 + 'px';
 
       // This triangle is in left or right Pear
       this.pearSide =
@@ -219,8 +214,18 @@ Pear2PearLoading = (function() {
       this.element.style.top = coord[1] + 'px';
       this.rotate(coord[2]);
 
+      // The div becomes a right triangle whose hypotenuse is the border width
+      this.element.style.borderLeftWidth =
+        this.element.style.borderRightWidth =
+        this.element.style.borderBottomWidth =
+        this.hypotenuseSize() / 2 + 'px';
+    },
+    draw: function draw() {
       container.appendChild(this.element);
     },
+    resize: function resize() {
+      this.locate(this.destination);
+    }
   };
 
   function MovingTriangle() {
@@ -236,6 +241,7 @@ Pear2PearLoading = (function() {
     }
 
     this.locate(this.origin, this.pearSide ^ 1);
+    this.draw();
     this.move();
   }
 
@@ -333,6 +339,12 @@ Pear2PearLoading = (function() {
     leftPearOffset = containerWidth * 0.15;
     // leftPear margins plus rightPear margin plus leftPear
     rightPearOffset = containerWidth * (0.15 * 3 + 0.25 * 0.75);
+
+    for (var i in triangles) {
+      for (var j in triangles[i]) {
+        triangles[i][j].resize();
+      }
+    }
   }
 
   function getBackgroundColor(el) {
