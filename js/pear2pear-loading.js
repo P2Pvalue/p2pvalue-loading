@@ -396,6 +396,10 @@ Pear2PearLoading = (function() {
   }
 
   function start() {
+    if (intervalId) {
+      window.clearInterval(intervalId);
+    }
+
     intervalId = window.setInterval(function() { createMovingTriangle(); }, 1000);
   }
 
