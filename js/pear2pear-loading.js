@@ -376,7 +376,7 @@ Pear2PearLoading = (function() {
   }
 
   function pause() {
-    window.clearInterval(intervalId);
+    clearInterval(intervalId);
   }
 
   return {
