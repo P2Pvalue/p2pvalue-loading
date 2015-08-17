@@ -363,11 +363,13 @@ Pear2PearLoading = (function() {
     }
   }
 
-  function create(el) {
-    // Use 'pear2pear-loading' id by default
-    el = el || 'pear2pear-loading';
+  function create(options) {
+    options = options || {};
 
-    container = document.getElementById(el);
+    // Use 'pear2pear-loading' id by default
+    options.el = options.el || 'pear2pear-loading';
+
+    container = document.getElementById(options.el);
     container.className = 'pear2pear-loading-container';
 
     var color = getBackgroundColor(container);
@@ -393,6 +395,10 @@ Pear2PearLoading = (function() {
     }
 
     start();
+
+    if (options.callback) {
+      options.callback();
+    }
   }
 
   function start() {
