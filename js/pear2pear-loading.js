@@ -36,7 +36,7 @@ Pear2PearLoading = (function() {
         [5, 7, 0],
         [5, 7, 1],
       ],
-      triangles = [[], []]
+      triangles = [[], []],
       movingTriangles = [];
 
   var intervalId;
